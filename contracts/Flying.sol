@@ -8,6 +8,7 @@ contract Flying {
     struct UserInfo{
         string privateKey;
         string publicKey;
+        bool disabled;
     }
 
     // 存储用户基础信息
@@ -19,7 +20,8 @@ contract Flying {
 
     // 设置基础信息
     function setUserInfo(string memory privateKey,string memory publicKey) public {
-        userInfoMapping[msg.sender] = UserInfo(privateKey,publicKey);
+        UserInfo memory old = userInfoMapping[msg.sender];
+        userInfoMapping[msg.sender] = UserInfo(privateKey,publicKey,old.disabled);
     }
 
     // 获取基础信息
@@ -27,4 +29,11 @@ contract Flying {
         return userInfoMapping[addr];
     }
 
+    // 禁用用户
+    function disableUser(address addr) public {
+        require(msg.sender == owner);
+
+        UserInfo memory old = userInfoMapping[addr];
+        userInfoMapping[msg.sender] = UserInfo(old.privateKey,old.publicKey,true);
+    }
 }
